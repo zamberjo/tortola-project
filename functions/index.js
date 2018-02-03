@@ -14,7 +14,6 @@ admin.initializeApp(functions.config().firebase);
 const know = admin.database().ref('/tortolapp-spreads');
 const spreadsRef = know.child('spreads');
 const hashtagRef = know.child('hashtags');
-const hashtagTimelineRef = know.child('hashtags-timeline');
 const newSpreadRef = spreadsRef.push();
 
 // Dialogflow Intent names
@@ -54,8 +53,8 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
 
     function doSpread(assistant) {
         console.log('doSpread');
-        var userName = checkUser(assistant);
-        // var userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);
+        // var userName = checkUser(assistant);
+        var userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);
         var message = assistant.getArgument(MESSAGE_PARAM);
         var hashtag = assistant.getArgument(HASHTAG_PARAM);
             hashtag = hashtag.toLowerCase();
@@ -73,13 +72,6 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         // Set hashtag child
         var newHashtagRef = hashtagRef.child(hashtag).push();
         newHashtagRef.set(message_obj);
-
-        // Set hashtag timeline
-        var newHashtagTimelineRef = hashtagTimelineRef.push();
-        newHashtagTimelineRef.set({
-            hashtag: hashtag,
-            timestamp: admin.database.ServerValue.TIMESTAMP,
-        });
 
         playersRef.child(newHashtag.key).set(message_obj);
     }
