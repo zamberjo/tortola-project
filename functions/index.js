@@ -206,14 +206,9 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    }
 
     function topSpreads(assistant) {
-        likesRef.once('value', snap => {
+        likesRef.orderByChild("likes").once('value', snap => {
             var likes = (snap.val() || {}).likes || 0
-            likes = likes + 1;
-            
-            likesRef.orderByChild("likes").once('value', snap => {
-                var likes = (snap.val() || {}).likes || 0;
-                assistant.ask(`<speak>Best spread have ${likes} likes</speak>`);
-            }
+            assistant.ask(`<speak>Best spread have ${likes} likes</speak>`);
         });
     }
 
