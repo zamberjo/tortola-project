@@ -22,6 +22,7 @@ const SPREAD_DO_INTENT = 'spread-do'
 const SPREADS_READ_INTENT = 'spread-read'
 const HASHTAG_READ_INTENT = 'hashtag-read'
 const HASHTAG_DISCOVER_INTENT = 'hashtag-discover'
+const TOP_SPREADS = 'most-liked'
 const GET_HELP = 'get-help'
 const ACTION_LIKE = 'action-like'
 
@@ -70,6 +71,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    actionMap.set(HASHTAG_READ_INTENT, readHashtag);
    actionMap.set(HASHTAG_DISCOVER_INTENT, discoverHashtag);
    actionMap.set(ACTION_LIKE, actionLike);
+   actionMap.set(TOP_SPREADS, topSpreads);
    actionMap.set(GET_HELP, getHelp);
    assistant.handleRequest(actionMap);
 
@@ -202,6 +204,18 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         });
         console.log(lastMessageId);
    }
+
+    function topSpreads(assistant) {
+        likesRef.once('value', snap => {
+            var likes = (snap.val() || {}).likes || 0
+            likes = likes + 1;
+            
+            likesRef.orderByChild("likes").once('value', snap => {
+                var likes = (snap.val() || {}).likes || 0;
+                assistant.ask(`<speak>Best spread have ${likes} likes</speak>`);
+            }
+        });
+    }
 
    function getHelp(assistant) {
         var speech = '<speak>';
