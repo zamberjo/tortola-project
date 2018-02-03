@@ -19,6 +19,8 @@ const newSpreadRef = spreadsRef.push();
 // Dialogflow Intent names
 const SPREAD_DO_INTENT = 'spread-do'
 const SPREADS_READ_INTENT = 'spread-read'
+const HASHTAG_READ_INTENT = 'hashtag-read'
+const HASHTAG_DISCOVER_INTENT = 'hashtag-discover'
 const GET_USER_INFO = 'get-user-info'
 const GET_HELP = 'get-help'
 
@@ -38,6 +40,12 @@ function checkUser(assistant) {
     return userName;
 }
 
+function parseHashtag(hastag) {
+    hashtag = hashtag.toLowerCase();
+    hashtag = hashtag.replace(/\s/g, '');
+    return hastag;
+}
+
 exports.tortolapp = functions.https.onRequest((request, response) => {
    console.log('headers: ' + JSON.stringify(request.headers));
    console.log('body: ' + JSON.stringify(request.body));
@@ -47,6 +55,8 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    let actionMap = new Map();
    actionMap.set(SPREAD_DO_INTENT, doSpread);
    actionMap.set(SPREADS_READ_INTENT, readSpread);
+   actionMap.set(HASHTAG_READ_INTENT, readHashtag);
+   actionMap.set(HASHTAG_DISCOVER_INTENT, discoverHashtag);
    actionMap.set(GET_USER_INFO, getUserInfo);
    actionMap.set(GET_HELP, getHelp);
    assistant.handleRequest(actionMap);
@@ -69,9 +79,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         // Set hashtag child
         var hashtag = assistant.getArgument(HASHTAG_PARAM);
         if (hashtag) {
-            hashtag = hashtag.toLowerCase();
-            hashtag = hashtag.replace(/\s/g, '');
-
+            hashtag = parseHashtag(hashtag);
             var newHashtagRef = hashtagRef.child(hashtag).push();
             newHashtagRef.set(message_obj);
         }
@@ -93,6 +101,39 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
                 speech = `<speak>${user} says <prosody pitch="${pitch}">${message}</prosody><break/></speak>`;
             });
             assistant.ask(speech);
+        });
+   }
+
+   function readHashtag(assistant) {
+        console.log('readHashtag');
+        var hashtag = parseHashtag(assistant.getArgument(HASHTAG_PARAM));
+
+        hashtagRef.child(hashtag).once('value', function (snap) {
+            var speech = "";
+            snap.forEach(function (childSnap) {
+                console.log('hastag', childSnap.val());
+                var user = (childSnap.val() || {}).user || "Unknown";
+                var message = (childSnap.val() || {}).msg || "WTF! I only had one job! this devs...";
+
+                var pitch = "low";
+                if ( Math.random() >= 0.5 ) pitch = "loud";
+
+                speech = `<speak>${user} says <prosody pitch="${pitch}">${message}</prosody><break/></speak>`;
+            });
+            assistant.ask(speech);
+        });
+   }
+
+   function discoverHashtag(assistant) {
+        console.log('discoverHashtag');
+
+        hashtagRef.once('value', function (snap) {
+            // var hastags = new hashtagsArray();
+            snap.forEach(function (childSnap) {
+                console.log(childSnap);
+            });
+            // speech = `<speak>${hastags} says ${message}</speak>`;
+            // assistant.ask(speech);
         });
    }
 
