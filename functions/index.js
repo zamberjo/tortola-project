@@ -122,7 +122,9 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
                 speech = `<speak>${user} says <prosody pitch="${pitch}">${message}</prosody><break/></speak>`;
                 last_childSnap = childSnap;
             });
-            assistant.setContext("message_id", 1, last_childSnap.key);
+            const parameters = {};
+            parameters["message_id"] = last_childSnap.key;
+            assistant.setContext("message_id", 1, parameters);
             assistant.ask(speech);
         });
    }
