@@ -56,7 +56,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         // var userName = checkUser(assistant);
         var userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM).value;
         var message = assistant.getArgument(MESSAGE_PARAM);
-        
+
         var message_obj = {
             user: userName,
             timestamp: admin.database.ServerValue.TIMESTAMP,
@@ -70,7 +70,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         var hashtag = assistant.getArgument(HASHTAG_PARAM);
         if (hashtag) {
             hashtag = hashtag.toLowerCase();
-            hashtag = hashtag.replace(" ", "");
+            hashtag = hashtag.replace(/\s/g, '');
 
             var newHashtagRef = hashtagRef.child(hashtag).push();
             newHashtagRef.set(message_obj);
