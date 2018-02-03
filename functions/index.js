@@ -83,22 +83,22 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    function readSpread(assistant) {
         console.log('readSpread');
 
-        var topSpreadQuery = newSpreadRef.orderByChild('timestamp').startAt(Date.now()).limitToFirst(1);
-        console.warn(topSpreadQuery);
-        topSpreadQuery.once('value', snap => {
-            var user = (snap.val() || {}).user || "Unknown";
-            var message = (snap.val() || {}).msg || "WTF! I only had one job! this devs...";
-
-            var pitch = "low";
-            if ( Math.random() >= 0.5 ) pitch = "loud";
-
-            const speech = `<speak>${user} says <prosody pitch="${pitch}">${message}</prosody></speak>`;
-            assistant.ask(speech);
-        });
-        spreadsRef.once('value', function (snap) {
+        var $defered = spreadsRef.once('value', function (snap) {
+            var count = 1;
+            var speech = "";
             snap.forEach(function (childSnap) {
                 console.log('spread', childSnap.val());
+                var user = (snap.val() || {}).user || "Unknown";
+                var message = (snap.val() || {}).msg || "WTF! I only had one job! this devs...";
+
+                var pitch = "low";
+                if ( Math.random() >= 0.5 ) pitch = "loud";
+
+                speech = speech + '<speak>${user} says <prosody pitch="${pitch}">${message}</prosody></speak>';
+                if (count === 3) throw BreakException;
+                count = count + 1;
             });
+            assistant.ask(speech);
         });
    }
 
