@@ -33,9 +33,10 @@ const OUT_CONTEXT = 'output_context';
 function checkUser(assistant) {
     const userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);
     if (!userName) {
-      const spread = '<speak><prosody volume="loud">You\re not logged!</prosody></speak>'
+      const spread = '<speak><prosody volume="loud">You\'re not logged!</prosody></speak>'
       assistant.ask(spread)
     }
+    return userName;
 }
 
 exports.tortolapp = functions.https.onRequest((request, response) => {
@@ -51,10 +52,19 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    actionMap.set(GET_HELP, getHelp);
    assistant.handleRequest(actionMap);
 
+    function checkUser(assistant) {
+        const userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);
+        /*if (!userName) {
+          const spread = '<speak><prosody volume="loud">You\'re not logged!</prosody></speak>'
+          assistant.ask(spread)
+        }*/
+        return userName;
+    }
+
     function doSpread(assistant) {
         console.log('doSpread');
-        checkUser(assistant);
-        var userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);
+        var userName = this.checkUser(assistant);
+        // var userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);
         var message = assistant.getArgument(MESSAGE_PARAM);
         var hashtag = assistant.getArgument(HASHTAG_PARAM);
 
