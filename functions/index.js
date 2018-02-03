@@ -128,11 +128,12 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         console.log('discoverHashtag');
 
         hashtagRef.once('value', function (snap) {
-            var list = assistant.buildList('Things to learn about');
+            var hastagArray = new Array();
             snap.forEach(function (childSnap) {
                 var hastag = childSnap.key;
-                list.addItems(assistant.buildOptionItem(hastag.toUpperCase(), [hastag])
+                hastagArray.push(hastag);
             });
+            assistant.buildList('List hastags').addItems(assistant.buildOptionItem(hastag.toUpperCase(), hastagArray));
             assistant.askWithList("List hastags", list);
         });
    }
