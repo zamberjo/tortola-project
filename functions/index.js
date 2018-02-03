@@ -23,6 +23,7 @@ const HASHTAG_READ_INTENT = 'hashtag-read'
 const HASHTAG_DISCOVER_INTENT = 'hashtag-discover'
 const GET_USER_INFO = 'get-user-info'
 const GET_HELP = 'get-help'
+const ACTION_LIKE = 'action-like'
 
 // Context Parameters
 const MESSAGE_PARAM = 'message';
@@ -30,6 +31,7 @@ const HASHTAG_PARAM = 'hashtag';
 const USERNAME_PARAM = 'username';
 
 const OUT_CONTEXT = 'username';
+const MSG_CONTEXT = 'message_id';
 
 function checkUser(assistant) {
     const userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);
@@ -58,17 +60,18 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    actionMap.set(HASHTAG_READ_INTENT, readHashtag);
    actionMap.set(HASHTAG_DISCOVER_INTENT, discoverHashtag);
    actionMap.set(GET_USER_INFO, getUserInfo);
+   actionMap.set(ACTION_LIKE, actionLike);
    actionMap.set(GET_HELP, getHelp);
    assistant.handleRequest(actionMap);
 
     function doSpread(assistant) {
         console.log('doSpread');
-        // var userName = checkUser(assistant);
-        var userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM).value;
+        var user = checkUser(assistant);
+        // var userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM).value;
         var message = assistant.getArgument(MESSAGE_PARAM);
 
         var message_obj = {
-            user: userName,
+            user: user.value,
             timestamp: admin.database.ServerValue.TIMESTAMP,
             msg: message,
         };
@@ -124,7 +127,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
             });
             const parameters = {};
             parameters["message_id"] = last_childSnap.key;
-            assistant.setContext("message_id", 1, parameters);
+            assistant.setContext(MSG_CONTEXT, 1, parameters);
             assistant.ask(speech);
         });
    }
@@ -159,6 +162,11 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
             });
             assistant.ask(`<speak>${speech_str}</speak>`);
         });
+   }
+
+   function actionLike(assistant) {
+        const lastMessage = assistant.getContextArgument(MSG_CONTEXT, MSG_CONTEXT).value;
+        console.log(lastMessage);
    }
 
    function getUserInfo(assistant) {
