@@ -153,7 +153,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
             var speech_str = "";
             snap.forEach(function (childSnap) {
                 var hashtag = childSnap.key;
-                speech_str = speech_str + hashtag + "<break/>";
+                speech_str = speech_str + hashtag + ", <break/>";
             });
             assistant.ask(`<speak>${speech_str}</speak>`);
         });
