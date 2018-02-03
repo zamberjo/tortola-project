@@ -95,11 +95,11 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
                 var pitch = "low";
                 if ( Math.random() >= 0.5 ) pitch = "loud";
 
-                if (count < 3) 
-                    speech = speech + '${user} says <prosody pitch="${pitch}">${message}</prosody><break/>';
+                if (count < 1) 
+                    speech = `<speak>${user} says <prosody pitch="${pitch}">${message}</prosody><break/></speak>`;
                 count = count + 1;
             });
-            assistant.ask("<speak>" + speech + "</speak>");
+            assistant.ask(speech);
         });
    }
 
