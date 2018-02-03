@@ -36,10 +36,10 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    assistant.handleRequest(actionMap);
 
     function getHastags(message) {
-        var message = message.split(" ");
+        var messageArray = message.split(" ");
         var hastagsArray = new Array();
-        for(var i =0 ; i < message.length ; i++){
-            if (messageArray[i] == "hastag") {
+        for(var i =0 ; i < message2.length ; i++){
+            if (messageArray[i] === "hastag") {
                 hastagsArray.push(messageArray[i + 1]);
             }
         }
