@@ -2,7 +2,11 @@
 
 process.env.DEBUG = 'actions-on-google:*';
 
-const Assistant = require('actions-on-google').ApiAiAssistant;
+//const Assistant = require('actions-on-google').ApiAiAssistant;
+const actionsOnGoogle = require('actions-on-google');
+const Assistant = actionsOnGoogle.ApiAiAssistant;
+const ActionsSdkApp = actionsOnGoogle.ActionsSdkApp;
+
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
@@ -40,7 +44,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         var newSpreadRef = spreadsRef.push();
         newSpreadRef.set({
             user: userName,
-            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            timestamp: admin.database.ServerValue.TIMESTAMP,
             msg: message,
         }, function onComplete() {
             const speech = `<speak>TODO ${userName} turtledove sent!</speak>`;
@@ -68,8 +72,9 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
 
    function getUserInfo(assistant) {
         console.log('getUserInfo');
-        const userId = app.getUser().userId;
-        console.log('USER ID: ' + userId);
-        console.log(app.getUser())
+        console.log('Assistant: ' + assistant)
+        const app = new ActionsSdkApp({request: request, response: response});
+        console.log('USER ID: ' + app.userId)
+        assistant.ask('USER ID: ' + app.userId);
    }
 });
