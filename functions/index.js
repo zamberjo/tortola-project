@@ -85,7 +85,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
 
         spreadsRef.once('value', function (snap) {
             var speech = "";
-            snap.limitToLast(1).forEach(function (childSnap) {
+            snap.forEach(function (childSnap) {
                 console.log('spread', childSnap.val());
                 var user = (childSnap.val() || {}).user || "Unknown";
                 var message = (childSnap.val() || {}).msg || "WTF! I only had one job! this devs...";
