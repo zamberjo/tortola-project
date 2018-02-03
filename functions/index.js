@@ -105,6 +105,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
 
         spreadsRef.once('value', function (snap) {
             var speech = "";
+            var last_childSnap;
             snap.forEach(function (childSnap) {
                 console.log('spread', childSnap.val());
                 var user = (childSnap.val() || {}).user || "Unknown";
@@ -114,7 +115,11 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
                 if ( Math.random() >= 0.5 ) pitch = "loud";
 
                 speech = `<speak>${user} says <prosody pitch="${pitch}">${message}</prosody><break/></speak>`;
+                last_childSnap = childSnap;
             });
+            const parameters = {};
+            parameters["message_id"] = last_childSnap.val().uuid;
+            assistant.setContext(MSG_CONTEXT, 1, parameters);
             assistant.ask(speech);
         });
    }
@@ -137,10 +142,14 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
                 speech = `<speak>${user} says <prosody pitch="${pitch}">${message}</prosody><break/></speak>`;
                 last_childSnap = childSnap;
             });
-            const parameters = {};
-            parameters["message_id"] = last_childSnap.val().uuid;
-            assistant.setContext(MSG_CONTEXT, 1, parameters);
-            assistant.ask(speech);
+            if ( last_childSnap ) {
+                const parameters = {};
+                parameters["message_id"] = last_childSnap.val().uuid;
+                assistant.setContext(MSG_CONTEXT, 1, parameters);
+                assistant.ask(speech);
+            } else {
+                assistant.ask(`<speak>Sorry, the hashtag ${hashtag} doesn't exist</speak>`);
+            }
         });
    }
 
