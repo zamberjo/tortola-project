@@ -180,9 +180,10 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         const lastMessageId = assistant.getContextArgument(MSG_CONTEXT, MSG_CONTEXT).value;
         likesRef.child(lastMessageId).once('value', snap => {
             var likes = (snap.val() || {}).likes || 0
-
+            likes = likes + 1;
+            
             likesRef.child(lastMessageId).set({
-                likes: likes + 1
+                likes: likes
             });
 
             assistant.ask(`<speak>This message has ${likes} likes</speak>`);
