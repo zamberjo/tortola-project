@@ -133,8 +133,11 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
                 var hastag = childSnap.key;
                 hastagArray.push(hastag);
             });
-            assistant.buildList('List hastags').addItems(assistant.buildOptionItem(hastagArray[0], hastagArray));
-            assistant.askWithList("List hastags", list);
+            assistant.askWithList(
+                "List hastags",
+                assistant.buildList('List hastags')
+                    .addItems(
+                        assistant.buildOptionItem("Hastags", hastagArray)));
         });
    }
 
