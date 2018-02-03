@@ -213,7 +213,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
             spreadsRef.orderByChild('uuid').equalTo(uuid).on("value", function (snapChild) {
                 var message = snapChild.msg;
                 assistant.ask(`<speak>Best spread says ${message} and have ${likes} likes</speak>`);
-            }
+            });
         });
     }
 
