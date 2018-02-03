@@ -30,6 +30,14 @@ const USERNAME_PARAM = 'username';
 
 const OUT_CONTEXT = 'output_context';
 
+function checkUser(assistant) {
+    const userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);
+    if (!userName) {
+      const spread = '<speak><prosody volume="loud">You\re not logged!</prosody></speak>'
+      assistant.ask(spread)
+    }
+}
+
 exports.tortolapp = functions.https.onRequest((request, response) => {
    console.log('headers: ' + JSON.stringify(request.headers));
    console.log('body: ' + JSON.stringify(request.body));
@@ -44,9 +52,11 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    assistant.handleRequest(actionMap);
 
 
+
    function doSpread(assistant) {
         console.log('doSpread');
-        var userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);      
+        checkUser(assistant);
+        var userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);
         var message = assistant.getArgument(MESSAGE_PARAM);
         var hastag = assistant.getArgument(HASHTAG_PARAM);
 
@@ -102,10 +112,8 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
                 TODO message help!
                 Say publish message to publish a new message.
                 Say listen tortola to get your last message published.
-
-
                 If you already haven't logged in tortolapp you need a new user identity,
-                say my name is... name to login on the application.
+                for example say 'my name is username' to login on the application.
             </speak>
         `;
         assistant.ask(speech);
