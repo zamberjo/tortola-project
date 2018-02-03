@@ -27,7 +27,7 @@ const MESSAGE_PARAM = 'message';
 const HASHTAG_PARAM = 'hashtag';
 const USERNAME_PARAM = 'username';
 
-const OUT_CONTEXT = 'output_context';
+const OUT_CONTEXT = 'username';
 
 function checkUser(assistant) {
     const userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);
@@ -54,12 +54,9 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
     function doSpread(assistant) {
         console.log('doSpread');
         // var userName = checkUser(assistant);
-        var userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);
+        var userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM).value;
         var message = assistant.getArgument(MESSAGE_PARAM);
-        var hashtag = assistant.getArgument(HASHTAG_PARAM);
-            hashtag = hashtag.toLowerCase();
-            hashtag = hashtag.replace(" ", "");
-
+        
         var message_obj = {
             user: userName,
             timestamp: admin.database.ServerValue.TIMESTAMP,
@@ -70,10 +67,14 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         newSpreadRef.set(message_obj);
 
         // Set hashtag child
-        var newHashtagRef = hashtagRef.child(hashtag).push();
-        newHashtagRef.set(message_obj);
+        var hashtag = assistant.getArgument(HASHTAG_PARAM);
+        if (hashtag) {
+            hashtag = hashtag.toLowerCase();
+            hashtag = hashtag.replace(" ", "");
 
-        playersRef.child(newHashtag.key).set(message_obj);
+            var newHashtagRef = hashtagRef.child(hashtag).push();
+            newHashtagRef.set(message_obj);
+        }
     }
 
    function readSpread(assistant) {
