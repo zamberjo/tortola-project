@@ -85,10 +85,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
 
         spreadsRef.once('value', function (snap) {
             var speech = "";
-            var count = 0;
-            console.log(typeof snap);
-            console.log(snap[snap.length-1].val());
-            snap.forEach(function (childSnap) {
+            snap.limitToLast(1).forEach(function (childSnap) {
                 console.log('spread', childSnap.val());
                 var user = (childSnap.val() || {}).user || "Unknown";
                 var message = (childSnap.val() || {}).msg || "WTF! I only had one job! this devs...";
@@ -96,9 +93,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
                 var pitch = "low";
                 if ( Math.random() >= 0.5 ) pitch = "loud";
 
-                if (count < 1) 
-                    speech = `<speak>${user} says <prosody pitch="${pitch}">${message}</prosody><break/></speak>`;
-                count = count + 1;
+                speech = `<speak>${user} says <prosody pitch="${pitch}">${message}</prosody><break/></speak>`;
             });
             assistant.ask(speech);
         });
