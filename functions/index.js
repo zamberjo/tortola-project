@@ -83,17 +83,22 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    function readSpread(assistant) {
         console.log('readSpread');
 
-        var topSpreadQuery = newSpreadRef.orderByChild('timestamp').limitToFirst(1);
+        var topSpreadQuery = newSpreadRef.orderByChild('timestamp').startAt(Date.now()).limitToFirst(1);
         console.warn(topSpreadQuery);
-        topSpreadQuery.once('value', spread => {
-            var user = (spread.val() || {}).user || "Unknown";
-            var message = (spread.val() || {}).msg || "WTF! I only had one job! this devs...";
+        topSpreadQuery.once('value', snap => {
+            var user = (snap.val() || {}).user || "Unknown";
+            var message = (snap.val() || {}).msg || "WTF! I only had one job! this devs...";
 
             var pitch = "low";
             if ( Math.random() >= 0.5 ) pitch = "loud";
 
             const speech = `<speak>${user} says <prosody pitch="${pitch}">${message}</prosody></speak>`;
             assistant.ask(speech);
+        });
+        spreadsRef.once('value', function (snap) {
+            snap.forEach(function (childSnap) {
+                console.log('spread', childSnap.val());
+            });
         });
    }
 
