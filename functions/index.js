@@ -22,7 +22,6 @@ const SPREAD_DO_INTENT = 'spread-do'
 const SPREADS_READ_INTENT = 'spread-read'
 const HASHTAG_READ_INTENT = 'hashtag-read'
 const HASHTAG_DISCOVER_INTENT = 'hashtag-discover'
-const GET_USER_INFO = 'get-user-info'
 const GET_HELP = 'get-help'
 const ACTION_LIKE = 'action-like'
 
@@ -70,7 +69,6 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    actionMap.set(SPREADS_READ_INTENT, readSpread);
    actionMap.set(HASHTAG_READ_INTENT, readHashtag);
    actionMap.set(HASHTAG_DISCOVER_INTENT, discoverHashtag);
-   actionMap.set(GET_USER_INFO, getUserInfo);
    actionMap.set(ACTION_LIKE, actionLike);
    actionMap.set(GET_HELP, getHelp);
    assistant.handleRequest(actionMap);
@@ -148,7 +146,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
                 assistant.setContext(MSG_CONTEXT, 1, parameters);
                 assistant.ask(speech);
             } else {
-                assistant.ask(`<speak>Sorry, the hashtag ${hashtag} doesn't exist</speak>`);
+                assistant.ask(`<speak>Sorry, the hashtag ${hashtag} does not exist</speak>`);
             }
         });
    }
@@ -206,16 +204,16 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    }
 
    function getHelp(assistant) {
-        const speech = '<speak>';
-          speech += 'Say \'publish message\' to publish a new message.<break/>\n';
-          speech += 'Say \'listen message\' to get your last message published.<break/>\n';
-          speech += 'Say \'give me the latest hashtags\' to get the last message published with this hashtag.<break/>\n';
-          speech += 'Say \'message with most likes\' to get the message with more likes.<break/>\n';
-          speech += 'After read a message, say \'like it\' to give it a like.<break/>\n';
-          speech += 'If you already haven\'t logged in tortolapp you need a new user identity,';
-          speech += 'for example say \'my name is username\' to login on the application.<break/>';
-          speech += 'Say \'Finish\' or \'Good bye\' to close the app.\n';
-          speech += '</speak>';
+        var speech = '<speak>';
+          speech = speech + 'Say \'publish message\' to publish a new message.<break/>\n';
+          speech = speech + 'Say \'listen message\' to get your last message published.<break/>\n';
+          speech = speech + 'Say \'give me the latest hashtags\' to get the last message published with this hashtag.<break/>\n';
+          speech = speech + 'Say \'message with most likes\' to get the message with more likes.<break/>\n';
+          speech = speech + 'After read a message, say \'like it\' to give it a like.<break/>\n';
+          speech = speech + 'If you already haven\'t logged in tortolapp you need a new user identity,';
+          speech = speech + 'for example say \'my name is username\' to login on the application.<break/>';
+          speech = speech + 'Say \'Finish\' or \'Good bye\' to close the app.\n';
+          speech = speech + '</speak>';
         assistant.ask(speech);
    }
 
