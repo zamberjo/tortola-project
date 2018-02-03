@@ -89,8 +89,8 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
 
             snap.forEach(function (childSnap) {
                 console.log('spread', childSnap.val());
-                var user = (snap.val() || {}).user || "Unknown";
-                var message = (snap.val() || {}).msg || "WTF! I only had one job! this devs...";
+                var user = (childSnap.val() || {}).user || "Unknown";
+                var message = (childSnap.val() || {}).msg || "WTF! I only had one job! this devs...";
 
                 var pitch = "low";
                 if ( Math.random() >= 0.5 ) pitch = "loud";
