@@ -58,7 +58,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         var message = assistant.getArgument(MESSAGE_PARAM);
         var hashtag = assistant.getArgument(HASHTAG_PARAM);
             hashtag = hashtag.toLowerCase();
-            hashtag = hashtag.replace(" ", "");
+            hashtag = hashtag.replace(/\s/g, '');
 
         var message_obj = {
             user: userName,
