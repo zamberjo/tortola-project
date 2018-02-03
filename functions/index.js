@@ -35,11 +35,23 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    actionMap.set(GET_USER_INFO, getUserInfo);
    assistant.handleRequest(actionMap);
 
+    function getHastags(message) {
+        var message = message.split(" ");
+        var hastagsArray = new Array();
+        for(var i =0 ; i < message.length ; i++){
+            if (messageArray[i] == "hastag") {
+                hastagsArray.push(messageArray[i + 1]);
+            }
+        }
+        return hastagsArray;
+    }
+
    function doSpread(assistant) {
         console.log('doSpread');
         // var userName = assistant.getArgument(USERNAME_PARAM);
         var userName = "Random turtledove";
         var message = assistant.getArgument(MESSAGE_PARAM);
+        var hastagsArray = getHastags(message);
 
         var newSpreadRef = spreadsRef.push();
         newSpreadRef.set({
@@ -50,6 +62,22 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
             const speech = `<speak>TODO ${userName} turtledove sent!</speak>`;
             assistant.ask(speech);
         });
+
+        // for(var i =0 ; i < hastagsArray.length ; i++){
+        //     var hastag = messageArray[i];
+        //     var newHastagSpreadRef = spreadsRef.child(hastag);
+
+        //     spreadsRef.child(hastag).once('value', snap => {
+        //         var count = (snap.val() || {}).count || 0
+
+        //         playersRef.child(playerName).set({
+        //             count: count + 1
+        //         });
+
+        //         //const speech = `<speak>Faba añadida a ${playerName}</speak>`;
+        //         //assistant.ask(speech);
+        //     });
+        // }
    }
 
    function readSpread(assistant) {
@@ -58,9 +86,10 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         var userName = "Random turtledove";
 
         var topSpreadRef = spreadsRef.orderByChild('timestamp').limitToLast(1);
+        console.log(topSpreadRef);
         topSpreadRef.once('value', spread => {
             var user = (spread.val() || {}).user || "Unknown";
-            var message = (spread.val() || {}).msg || "WTF! i'm forgot what says!";
+            var message = (spread.val() || {}).msg || "WTF! I only had one job! this devs...";
 
             var pitch = "low";
             if ( Math.random() >= 0.5 ) pitch = "loud";
