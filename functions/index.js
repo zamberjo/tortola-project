@@ -128,16 +128,22 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         console.log('discoverHashtag');
 
         hashtagRef.once('value', function (snap) {
-            var hashtagArray = new Array();
+            // var hashtagArray = new Array();
+            // snap.forEach(function (childSnap) {
+            //     var hashtag = childSnap.key;
+            //     hashtagArray.push(hashtag);
+            // });
+            // assistant.askWithList(
+            //     "List hashtags",
+            //     assistant.buildList('List hashtags')
+            //         .addItems(
+            //             assistant.buildOptionItem("Hashtags", hashtagArray)));
+            var list = assistant.buildList('List hashtags');
             snap.forEach(function (childSnap) {
                 var hashtag = childSnap.key;
-                hashtagArray.push(hashtag);
+                list.addItems(assistant.buildOptionItem(hashtag.toUpperCase(), [hashtag, hashtag]));
             });
-            assistant.askWithList(
-                "List hashtags",
-                assistant.buildList('List hashtags')
-                    .addItems(
-                        assistant.buildOptionItem("Hashtags", hashtagArray)));
+            assistant.askWithList("List hashtags", list);
         });
    }
 
