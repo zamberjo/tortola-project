@@ -13,7 +13,9 @@ admin.initializeApp(functions.config().firebase);
 
 const know = admin.database().ref('/tortolapp-spreads');
 const spreadsRef = know.child('spreads');
+const hashtagRef = know.child('hashtags');
 const newSpreadRef = spreadsRef.push();
+const newHastagRef = hashtagRef.push();
 
 // Dialogflow Intent names
 const SPREAD_DO_INTENT = 'spread-do'
@@ -23,6 +25,7 @@ const GET_HELP = 'get-help'
 
 // Context Parameters
 const MESSAGE_PARAM = 'message';
+const HASHTAG_PARAM = 'hastag';
 const USERNAME_PARAM = 'username';
 
 const OUT_CONTEXT = 'output_context';
@@ -40,62 +43,46 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    actionMap.set(GET_HELP, getHelp);
    assistant.handleRequest(actionMap);
 
-    /*function getHastags(message) {
-        var messageArray = message.split(" ");
-        var hastagsArray = new Array();
-        for(var i =0 ; i < message2.length ; i++){
-            if (messageArray[i] === "hastag") {
-                hastagsArray.push(messageArray[i + 1]);
-            }
-        }
-        return hastagsArray;
-    }*/
 
    function doSpread(assistant) {
         console.log('doSpread');
         var userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);      
         var message = assistant.getArgument(MESSAGE_PARAM);
-        //var hastagsArray = getHastags(message);
+        var hastag = assistant.getArgument(HASHTAG_PARAM);
 
-        newSpreadRef.set({
+        var message_obj = {
             user: userName,
             timestamp: admin.database.ServerValue.TIMESTAMP,
             msg: message,
-        });
+        };
+        var hashtag_obj = {
+            name: hashtag,
+            messages: [],
+        };
 
-        // for(var i =0 ; i < hastagsArray.length ; i++){
-        //     var hastag = messageArray[i];
-        //     var newHastagSpreadRef = spreadsRef.child(hastag);
+        newSpreadRef.set(message_obj);
+        var newHastag =newHastagRef.set(hashtag_obj);
 
-        //     spreadsRef.child(hastag).once('value', snap => {
-        //         var count = (snap.val() || {}).count || 0
-
-        //         playersRef.child(playerName).set({
-        //             count: count + 1
-        //         });
-
-        //         //const speech = `<speak>Faba añadida a ${playerName}</speak>`;
-        //         //assistant.ask(speech);
-        //     });
-        // }
+        playersRef.child(newHastag.key).set(message_obj);
    }
 
    function readSpread(assistant) {
         console.log('readSpread');
 
-        spreadsRef.once('value', function (snap) {
-            var speech = "";
-            snap.forEach(function (childSnap) {
-                console.log('spread', childSnap.val());
-                var user = (childSnap.val() || {}).user || "Unknown";
-                var message = (childSnap.val() || {}).msg || "WTF! I only had one job! this devs...";
+        spreadsRef.orderByChild("timestamp").limitToFirst(1).once('value', function (snap) {
+            console.log(snap);
+            // var speech = "";
+            // snap.forEach(function (childSnap) {
+            //     console.log('spread', childSnap.val());
+            //     var user = (childSnap.val() || {}).user || "Unknown";
+            //     var message = (childSnap.val() || {}).msg || "WTF! I only had one job! this devs...";
 
-                var pitch = "low";
-                if ( Math.random() >= 0.5 ) pitch = "loud";
+            //     var pitch = "low";
+            //     if ( Math.random() >= 0.5 ) pitch = "loud";
 
-                speech = `<speak>${user} says <prosody pitch="${pitch}">${message}</prosody><break/></speak>`;
-            });
-            assistant.ask(speech);
+            //     speech = `<speak>${user} says <prosody pitch="${pitch}">${message}</prosody><break/></speak>`;
+            // });
+            // assistant.ask(speech);
         });
    }
 
