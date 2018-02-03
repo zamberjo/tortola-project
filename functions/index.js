@@ -211,8 +211,8 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
             var uuid = snap.key;
 
             spreadsRef.orderByChild('uuid').equalTo(uuid).on("value", function (snapChild) {
-                var message = snapChild.msg;
-                assistant.ask(`<speak>Best spread says ${message} and have ${likes} likes</speak>`);
+                var message = (snapChild.val() || {}).msg || "";
+                assistant.ask(`<speak>Best spread says ${message} and has ${likes} likes</speak>`);
             });
         });
     }
