@@ -138,12 +138,21 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
             //     assistant.buildList('List hashtags')
             //         .addItems(
             //             assistant.buildOptionItem("Hashtags", hashtagArray)));
-            var list = assistant.buildList('List hashtags');
+            
+            // API V2
+            // var list = assistant.buildList('List hashtags');
+            // snap.forEach(function (childSnap) {
+            //     var hashtag = childSnap.key;
+            //     list.addItems(assistant.buildOptionItem(hashtag.toUpperCase(), [hashtag, hashtag]));
+            // });
+            // assistant.askWithList("List hashtags", list);
+
+            var speech = ``;
             snap.forEach(function (childSnap) {
                 var hashtag = childSnap.key;
-                list.addItems(assistant.buildOptionItem(hashtag.toUpperCase(), [hashtag, hashtag]));
+                speech = `${speech}${hastag}<break/>`;
             });
-            assistant.askWithList("List hashtags", list);
+            assistant.ask(`<speak>${speech}</speak>`);
         });
    }
 
