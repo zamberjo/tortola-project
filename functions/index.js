@@ -22,7 +22,7 @@ const GET_USER_INFO = 'get-user-info'
 
 // Context Parameters
 const MESSAGE_PARAM = 'message';
-// const USERNAME_PARAM = 'username';
+const USERNAME_PARAM = 'username';
 
 exports.tortolapp = functions.https.onRequest((request, response) => {
    console.log('headers: ' + JSON.stringify(request.headers));
@@ -49,10 +49,9 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
 
    function doSpread(assistant) {
         console.log('doSpread');
-        // var userName = assistant.getArgument(USERNAME_PARAM);
-        var userName = "Random turtledove";
+        var userName = assistant.getArgument(USERNAME_PARAM);
         var message = assistant.getArgument(MESSAGE_PARAM);
-        var hastagsArray = getHastags(message);
+        //var hastagsArray = getHastags(message);
 
         newSpreadRef.set({
             user: userName,
@@ -83,9 +82,10 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    function readSpread(assistant) {
         console.log('readSpread');
 
-        var $defered = spreadsRef.once('value', function (snap) {
+        spreadsRef.once('value', function (snap) {
             var count = 1;
             var speech = "";
+
             snap.forEach(function (childSnap) {
                 console.log('spread', childSnap.val());
                 var user = (snap.val() || {}).user || "Unknown";
@@ -94,11 +94,11 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
                 var pitch = "low";
                 if ( Math.random() >= 0.5 ) pitch = "loud";
 
-                speech = speech + '<speak>${user} says <prosody pitch="${pitch}">${message}</prosody></speak>';
+                speech = speech + '${user} says <prosody pitch="${pitch}">${message}</prosody><break/>';
                 if (count === 3) throw BreakException;
                 count = count + 1;
             });
-            assistant.ask(speech);
+            assistant.ask("<speak>" + speech + "</speak>");
         });
    }
 
