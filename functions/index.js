@@ -24,6 +24,8 @@ const GET_USER_INFO = 'get-user-info'
 const MESSAGE_PARAM = 'message';
 const USERNAME_PARAM = 'username';
 
+const OUT_CONTEXT = 'output_context';
+
 exports.tortolapp = functions.https.onRequest((request, response) => {
    console.log('headers: ' + JSON.stringify(request.headers));
    console.log('body: ' + JSON.stringify(request.body));
@@ -49,7 +51,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
 
    function doSpread(assistant) {
         console.log('doSpread');
-        var userName = assistant.getArgument(USERNAME_PARAM);
+        var userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);      
         var message = assistant.getArgument(MESSAGE_PARAM);
         //var hastagsArray = getHastags(message);
 
@@ -57,9 +59,6 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
             user: userName,
             timestamp: admin.database.ServerValue.TIMESTAMP,
             msg: message,
-        }, function onComplete() {
-            const speech = `<speak>TODO ${userName} turtledove sent!</speak>`;
-            assistant.ask(speech);
         });
 
         // for(var i =0 ; i < hastagsArray.length ; i++){
@@ -83,10 +82,9 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         console.log('readSpread');
 
         spreadsRef.once('value', function (snap) {
-            var count = 1;
             var speech = "";
 
-            snap.forEach(function (childSnap) {
+            snap.slice(0, 3).forEach(function (childSnap) {
                 console.log('spread', childSnap.val());
                 var user = (snap.val() || {}).user || "Unknown";
                 var message = (snap.val() || {}).msg || "WTF! I only had one job! this devs...";
@@ -95,8 +93,6 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
                 if ( Math.random() >= 0.5 ) pitch = "loud";
 
                 speech = speech + '${user} says <prosody pitch="${pitch}">${message}</prosody><break/>';
-                if (count === 3) throw BreakException;
-                count = count + 1;
             });
             assistant.ask("<speak>" + speech + "</speak>");
         });
