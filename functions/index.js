@@ -40,10 +40,10 @@ function checkUser(assistant) {
     return userName;
 }
 
-function parseHashtag(hastag) {
+function parseHashtag(hashtag) {
     hashtag = hashtag.toLowerCase();
     hashtag = hashtag.replace(/\s/g, '');
-    return hastag;
+    return hashtag;
 }
 
 exports.tortolapp = functions.https.onRequest((request, response) => {
@@ -111,7 +111,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         hashtagRef.child(hashtag).once('value', function (snap) {
             var speech = "";
             snap.forEach(function (childSnap) {
-                console.log('hastag', childSnap.val());
+                console.log('hashtag', childSnap.val());
                 var user = (childSnap.val() || {}).user || "Unknown";
                 var message = (childSnap.val() || {}).msg || "WTF! I only had one job! this devs...";
 
@@ -128,16 +128,16 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         console.log('discoverHashtag');
 
         hashtagRef.once('value', function (snap) {
-            var hastagArray = new Array();
+            var hashtagArray = new Array();
             snap.forEach(function (childSnap) {
-                var hastag = childSnap.key;
-                hastagArray.push(hastag);
+                var hashtag = childSnap.key;
+                hashtagArray.push(hashtag);
             });
             assistant.askWithList(
-                "List hastags",
-                assistant.buildList('List hastags')
+                "List hashtags",
+                assistant.buildList('List hashtags')
                     .addItems(
-                        assistant.buildOptionItem("Hastags", hastagArray)));
+                        assistant.buildOptionItem("Hashtags", hashtagArray)));
         });
    }
 
