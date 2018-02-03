@@ -13,6 +13,7 @@ const spreadsRef = know.child('spreads');
 // Dialogflow Intent names
 const SPREAD_DO_INTENT = 'spread-do'
 const SPREADS_READ_INTENT = 'spread-read'
+const GET_USER_INFO = 'get-user-info'
 
 // Context Parameters
 const MESSAGE_PARAM = 'message';
@@ -27,6 +28,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    let actionMap = new Map();
    actionMap.set(SPREAD_DO_INTENT, doSpread);
    actionMap.set(SPREADS_READ_INTENT, readSpread);
+   actionMap.set(GET_USER_INFO, getUserInfo);
    assistant.handleRequest(actionMap);
 
    function doSpread(assistant) {
@@ -62,5 +64,12 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
             const speech = `<speak>${user} says <prosody pitch="${pitch}">${message}</prosody></speak>`;
             assistant.ask(speech);
         });
+   }
+
+   function getUserInfo(assistant) {
+        console.log('getUserInfo');
+        const userId = app.getUser().userId;
+        console.log('USER ID: ' + userId);
+        console.log(app.getUser())
    }
 });
