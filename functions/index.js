@@ -19,6 +19,7 @@ const newSpreadRef = spreadsRef.push();
 const SPREAD_DO_INTENT = 'spread-do'
 const SPREADS_READ_INTENT = 'spread-read'
 const GET_USER_INFO = 'get-user-info'
+const GET_HELP = 'get-help'
 
 // Context Parameters
 const MESSAGE_PARAM = 'message';
@@ -36,6 +37,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    actionMap.set(SPREAD_DO_INTENT, doSpread);
    actionMap.set(SPREADS_READ_INTENT, readSpread);
    actionMap.set(GET_USER_INFO, getUserInfo);
+   actionMap.set(GET_HELP, getHelp);
    assistant.handleRequest(actionMap);
 
     /*function getHastags(message) {
@@ -106,5 +108,20 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         console.log('USER: ' + user.userId)
         console.log('USER ID: ' + user.userId)
         assistant.ask('USER ID: ' + user.userId);
+   }
+
+   function getHelp(assistant) {
+        const speech = `
+            <speak>
+                TODO message help!
+                Say publish message to publish a new message.
+                Say listen tortola to get your last message published.
+
+
+                If you already haven't logged in tortolapp you need a new user identity,
+                say my name is... name to login on the application.
+            </speak>
+        `;
+        assistant.ask(speech);
    }
 });
