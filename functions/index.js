@@ -131,7 +131,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
             var list = assistant.buildList('Things to learn about');
             snap.forEach(function (childSnap) {
                 var hastag = childSnap.key;
-                list.addItems(assistant.buildOptionItem(hastag.toUpperCase(), [hastag])
+                list.addItems(assistant.buildOptionItem(hastag.toUpperCase(), [hastag]));
             });
             assistant.askWithList("List hastags", list);
         });
