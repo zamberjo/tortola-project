@@ -14,6 +14,7 @@ admin.initializeApp(functions.config().firebase);
 const know = admin.database().ref('/tortolapp-spreads');
 const spreadsRef = know.child('spreads');
 const hashtagRef = know.child('hashtags');
+const likesRef = know.child('likes');
 const newSpreadRef = spreadsRef.push();
 
 // Dialogflow Intent names
@@ -48,6 +49,16 @@ function parseHashtag(hashtag) {
     return hashtag;
 }
 
+function guid() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+      s4() + '-' + s4() + s4() + s4();
+}
+
 exports.tortolapp = functions.https.onRequest((request, response) => {
    console.log('headers: ' + JSON.stringify(request.headers));
    console.log('body: ' + JSON.stringify(request.body));
@@ -71,6 +82,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         var message = assistant.getArgument(MESSAGE_PARAM);
 
         var message_obj = {
+            uuid: guid(),
             user: user.value,
             timestamp: admin.database.ServerValue.TIMESTAMP,
             msg: message,
@@ -126,7 +138,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
                 last_childSnap = childSnap;
             });
             const parameters = {};
-            parameters["message_id"] = last_childSnap.key;
+            parameters["message_id"] = last_childSnap.val().uuid;
             assistant.setContext(MSG_CONTEXT, 1, parameters);
             assistant.ask(speech);
         });
@@ -165,8 +177,17 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    }
 
    function actionLike(assistant) {
-        const lastMessage = assistant.getContextArgument(MSG_CONTEXT, MSG_CONTEXT).value;
-        console.log(lastMessage);
+        const lastMessageId = assistant.getContextArgument(MSG_CONTEXT, MSG_CONTEXT).value;
+        likesRef.child(lastMessageId).once('value', snap => {
+            var likes = (snap.val() || {}).likes || 0
+
+            likesRef.child(lastMessageId).set({
+                likes: likes + 1
+            });
+
+            assistant.ask(`<speak>This message has ${likes} likes</speak>`);
+        });
+        console.log(lastMessageId);
    }
 
    function getUserInfo(assistant) {
