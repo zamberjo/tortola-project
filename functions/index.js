@@ -4,7 +4,7 @@ process.env.DEBUG = 'actions-on-google:*';
 
 //const Assistant = require('actions-on-google').ApiAiAssistant;
 const actionsOnGoogle = require('actions-on-google');
-const Assistant = actionsOnGoogle.ApiAiAssistant;
+const Assistant = actionsOnGoogle.DialogflowApp;
 const ActionsSdkApp = actionsOnGoogle.ActionsSdkApp;
 
 const functions = require('firebase-functions');
@@ -36,7 +36,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    actionMap.set(GET_USER_INFO, getUserInfo);
    assistant.handleRequest(actionMap);
 
-    function getHastags(message) {
+    /*function getHastags(message) {
         var messageArray = message.split(" ");
         var hastagsArray = new Array();
         for(var i =0 ; i < message2.length ; i++){
@@ -45,7 +45,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
             }
         }
         return hastagsArray;
-    }
+    }*/
 
    function doSpread(assistant) {
         console.log('doSpread');
@@ -99,9 +99,11 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
 
    function getUserInfo(assistant) {
         console.log('getUserInfo');
-        console.log('Assistant: ' + assistant)
-        const app = new ActionsSdkApp({request: request, response: response});
-        console.log('USER ID: ' + app.userId)
-        assistant.ask('USER ID: ' + app.userId);
+        const app = new ActionsSdkApp(assistant.requestData);      
+        const user = app.getUser()
+        
+        console.log('USER: ' + user.userId)
+        console.log('USER ID: ' + user.userId)
+        assistant.ask('USER ID: ' + user.userId);
    }
 });
