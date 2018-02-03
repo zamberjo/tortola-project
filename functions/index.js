@@ -13,6 +13,7 @@ admin.initializeApp(functions.config().firebase);
 
 const know = admin.database().ref('/tortolapp-spreads');
 const spreadsRef = know.child('spreads');
+const newSpreadRef = spreadsRef.push();
 
 // Dialogflow Intent names
 const SPREAD_DO_INTENT = 'spread-do'
@@ -53,7 +54,6 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         var message = assistant.getArgument(MESSAGE_PARAM);
         var hastagsArray = getHastags(message);
 
-        var newSpreadRef = spreadsRef.push();
         newSpreadRef.set({
             user: userName,
             timestamp: admin.database.ServerValue.TIMESTAMP,
@@ -82,12 +82,10 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
 
    function readSpread(assistant) {
         console.log('readSpread');
-        // var userName = assistant.getArgument(USERNAME_PARAM);
-        var userName = "Random turtledove";
 
-        var topSpreadRef = spreadsRef.orderByChild('timestamp').limitToLast(1);
-        console.log(topSpreadRef);
-        topSpreadRef.once('value', spread => {
+        var topSpreadQuery = newSpreadRef.orderByChild('timestamp').limitToFirst(1);
+        console.warn(topSpreadQuery);
+        topSpreadQuery.once('value', spread => {
             var user = (spread.val() || {}).user || "Unknown";
             var message = (spread.val() || {}).msg || "WTF! I only had one job! this devs...";
 
