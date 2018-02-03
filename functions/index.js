@@ -110,6 +110,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
 
         hashtagRef.child(hashtag).once('value', function (snap) {
             var speech = "";
+            var last_childSnap;
             snap.forEach(function (childSnap) {
                 console.log('hashtag', childSnap.val());
                 var user = (childSnap.val() || {}).user || "Unknown";
@@ -119,7 +120,9 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
                 if ( Math.random() >= 0.5 ) pitch = "loud";
 
                 speech = `<speak>${user} says <prosody pitch="${pitch}">${message}</prosody><break/></speak>`;
+                last_childSnap = childSnap;
             });
+            assistant.setContext("message_id", 1, last_childSnap.key);
             assistant.ask(speech);
         });
    }
