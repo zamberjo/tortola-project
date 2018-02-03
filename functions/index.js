@@ -25,7 +25,7 @@ const GET_HELP = 'get-help'
 
 // Context Parameters
 const MESSAGE_PARAM = 'message';
-const HASHTAG_PARAM = 'hastag';
+const HASHTAG_PARAM = 'hashtag';
 const USERNAME_PARAM = 'username';
 
 const OUT_CONTEXT = 'output_context';
@@ -56,7 +56,7 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         checkUser(assistant);
         var userName = assistant.getContextArgument(OUT_CONTEXT, USERNAME_PARAM);
         var message = assistant.getArgument(MESSAGE_PARAM);
-        var hastag = assistant.getArgument(HASHTAG_PARAM);
+        var hashtag = assistant.getArgument(HASHTAG_PARAM);
 
         var message_obj = {
             user: userName,
@@ -67,18 +67,18 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         // Set message
         newSpreadRef.set(message_obj);
 
-        // Set hastag child
-        var newHastagRef = hashtagRef.child(hastag).push();
-        newHastagRef.set(message_obj);
+        // Set hashtag child
+        var newHashtagRef = hashtagRef.child(hashtag).push();
+        newHashtagRef.set(message_obj);
 
-        // Set hastag timeline
-        var newHastagTimelineRef = hashtagTimelineRef.push();
-        newHastagTimelineRef.set({
-            hastag: hastag,
+        // Set hashtag timeline
+        var newHashtagTimelineRef = hashtagTimelineRef.push();
+        newHashtagTimelineRef.set({
+            hashtag: hashtag,
             timestamp: admin.database.ServerValue.TIMESTAMP,
         });
 
-        playersRef.child(newHastag.key).set(message_obj);
+        playersRef.child(newHashtag.key).set(message_obj);
     }
 
    function readSpread(assistant) {
