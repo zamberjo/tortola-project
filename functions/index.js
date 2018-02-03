@@ -150,12 +150,12 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
             // });
             // assistant.askWithList("List hashtags", list);
 
-            var speech = ``;
+            var speech_str = "";
             snap.forEach(function (childSnap) {
                 var hashtag = childSnap.key;
-                speech = `${speech}${hastag}<break/>`;
+                speech_str = speech_str + hastag + "<break/>";
             });
-            assistant.ask(`<speak>${speech}</speak>`);
+            assistant.ask(`<speak>${speech_str}</speak>`);
         });
    }
 
