@@ -186,7 +186,12 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
    }
 
    function actionLike(assistant) {
-        const lastMessageId = assistant.getContextArgument(MSG_CONTEXT, MSG_CONTEXT).value;
+        const lastMessage = assistant.getContextArgument(MSG_CONTEXT, MSG_CONTEXT);
+        if (!lastMessage){
+            assistant.ask('<speak><prosody volume="loud">Not read any message recently!</prosody></speak>');
+            return;
+        }
+        const lastMessageId = lastMessage.value;
         likesRef.child(lastMessageId).once('value', snap => {
             var likes = (snap.val() || {}).likes || 0
             likes = likes + 1;
@@ -200,20 +205,9 @@ exports.tortolapp = functions.https.onRequest((request, response) => {
         console.log(lastMessageId);
    }
 
-   function getUserInfo(assistant) {
-        console.log('getUserInfo');
-        const app = new ActionsSdkApp(assistant.requestData);      
-        const user = app.getUser()
-        
-        console.log('USER: ' + user.userId)
-        console.log('USER ID: ' + user.userId)
-        assistant.ask('USER ID: ' + user.userId);
-   }
-
    function getHelp(assistant) {
         const speech = `
             <speak>
-                TODO message help!
                 Say publish message to publish a new message.
                 Say listen tortola to get your last message published.
                 If you already haven't logged in tortolapp you need a new user identity,
